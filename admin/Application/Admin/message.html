@@ -1,0 +1,48 @@
+<!DOCTYPE">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>跳转提示</title>
+</head>
+<?php
+
+	$warning = isset($message) ? $message : $error;
+	$type    = isset($message) ? '1' : '2';
+?>
+
+<script type="text/javascript" src="__PUBLIC__/plugins/layui/layui.js"></script>
+<script>
+var message = '<span><b><?php echo $warning;?></b>&nbsp;<b id="wait"><?php echo($waitSecond);?></b>秒后将自动跳转...</span>';
+
+var jumpUrl = "{$jumpUrl}";
+var type    = "{$type}";
+layui.use(['layer'], function() {
+	var layer = layui.layer,
+		$ = layui.jquery;
+	    var _index =  layer.open({
+		      title:'信息提示',
+		      icon : type,
+	    	  content: message,
+	    	  area: '400px',
+	    	  yes: function(){
+	    		  window.location.href=jumpUrl
+	    	  },
+		      end: function(){
+		    	 window.history.back(-1);
+		      }
+		    });
+		
+	    (function(){
+	        var wait = document.getElementById('wait');
+	        var interval = setInterval(function(){
+	            var time = --wait.innerHTML;
+	            if(time <= 0) {
+	               layer.close(_index);
+	            };
+	        }, 1000);
+	    })();
+	
+});
+</script>
+</body>
+</html>
