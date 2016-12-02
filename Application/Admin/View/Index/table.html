@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>Table</title>
+		<link rel="stylesheet" href="__PUBLIC__/plugins/layui/css/layui.css" media="all" />
+		<link rel="stylesheet" href="__PUBLIC__/css/global.css" media="all">
+		<link rel="stylesheet" href="__PUBLIC__/plugins/font-awesome/css/font-awesome.min.css">
+		<link rel="stylesheet" href="__PUBLIC__/css/table.css" />
+	</head>
+
+	<body>
+		<div class="admin-main">
+		
+			<blockquote class="layui-elem-quote">
+				<button  class="layui-btn layui-btn-small add">
+					<i class="layui-icon">&#xe608;</i> 添加信息
+				</button>
+			<a href="#" class="layui-btn layui-btn-small">
+				<i class="layui-icon">&#xe608;</i> 导入信息
+			</a>
+			<a href="#" class="layui-btn layui-btn-small">
+				<i class="fa fa-shopping-cart" aria-hidden="true"></i> 导出信息
+			</a>
+			<a href="javascript:;" class="layui-btn layui-btn-small" id="search">
+				<i class="layui-icon">&#xe615;</i> 搜索
+			</a>
+			</blockquote>
+			<blockquote class="layui-elem-quote">
+			<form class="layui-form">
+			<div class="layui-form-item" style="width:20%;">
+		    <label class="layui-form-label">选择框</label>
+		    <div class="layui-input-block">
+		      <select name="city" lay-verify="required">
+		        <option value="5">请选择</option>
+		        <option value="0" selected>北京</option>
+		        <option value="1">上海</option>
+		        <option value="2">广州</option>
+		        <option value="3">深圳</option>
+		        <option value="4">杭州</option>
+		      </select>
+		    </div>
+		  </div>
+		  </form>
+		  </blockquote>
+			<fieldset class="layui-elem-field">
+				<legend>数据列表</legend>
+				<div class="layui-field-box">
+			<table class="site-table table-hover">
+				<thead>
+					<tr>
+						<th>所属分类</th>
+						<th>标题</th>
+						<th>作者</th>
+						<th>创建时间</th>
+						<th>浏览量</th>
+						<th>状态</th>
+						<th>排序值</th>
+						<th>置顶</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Layui</td>
+						<td>
+							<a href="/manage/article_edit_1">演示站点发布成功啦。</a>
+						</td>
+						<td>Beginner</td>
+						<td>2016-11-16 11:50</td>
+						<td>1298</td>
+						<td>正常</td>
+						<td>99</td>
+						<td style="text-align:center;"><i class="layui-icon" style="color:green;"></i></td>
+						<td>
+							<a href="/detail-1" target="_blank" class="layui-btn layui-btn-normal layui-btn-mini">预览</a>
+							<a href="/manage/article_edit_1" class="layui-btn layui-btn-mini">编辑</a>
+							<a href="javascript:;" data-id="1" data-opt="del" class="layui-btn layui-btn-danger layui-btn-mini del">删除</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+				</div>
+			</fieldset>
+			<div class="admin-table-page">
+				<div id="page" class="page">
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript" src="__PUBLIC__/plugins/layui/layui.js"></script>
+		<script>
+			layui.config({
+				base: 'plugins/layui/modules/'
+			});
+
+			layui.use(['laypage','layer','form'], function() {
+				var laypage = layui.laypage,
+					$ = layui.jquery
+					form = layui.form();
+					//请求表单
+				/* $('.add').click(function(){
+					var url = "{:U('Index/form')}";
+					$.get(url,function(data){
+						layer.open({
+							  title:'提交表单',//设置弹窗层标题
+							  type: 1,
+							  skin: 'layui-layer-rim', //加上边框
+							  area: ['800px'], //宽高
+							  resize:true,//是否允许拉伸
+							  content: data,
+						});
+					})
+				}); */
+				$('.add').click(function(){
+					var url = "{:U('Index/form')}";
+					$.get(url,function(data){
+						//多窗口模式，层叠置顶
+						layer.open({
+						  type: 1 //此处以iframe举例
+						  ,title: '添加信息'
+						  ,area: ['600px']
+						  ,shade: 0
+						  ,maxmin: true
+						  ,content: data
+						  ,btn: ['添加表单选项', '全部关闭'] //只是为了演示
+						  ,yes: function(){
+							  $.get(url,function(data){
+									layer.open({
+										  title:'提交表单',//设置弹窗层标题
+										  type: 1,
+										  area: ['800px'], //宽高
+										  shade: 0,
+										  maxmin: true,
+										  content: data,
+									});
+								})
+						  }
+						  ,btn2: function(){
+						    layer.closeAll();
+						  }
+						  ,zIndex: layer.zIndex //重点1
+						  ,success: function(layero){
+						    layer.setTop(layero); //重点2
+						  }
+						});
+					})
+				});
+				
+				//删除
+				$('.del').click(function(){
+					layer.confirm('确定删除吗?', {
+						  icon: 3,
+						  skin: 'layer-ext-moon',
+						  btn: ['确认','取消'] //按钮
+						}, function(){
+							//确定操作
+							if(true){
+								layer.msg('删除成功呢')
+							}	
+					  });
+				})
+				//page
+				/* laypage({
+					cont: 'page',
+					pages: 25 //总页数
+						,
+					groups: 5 //连续显示分页数
+						,
+					jump: function(obj, first) {
+						//得到了当前页，用于向服务端请求对应数据
+						var curr = obj.curr;
+						if(!first) {
+							//layer.msg('第 '+ obj.curr +' 页');
+						}
+					}
+				}); */
+			});
+		</script>
+	</body>
+
+</html>
